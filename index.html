@@ -1,1 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏎️ Corrida Insana</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      border: 4px solid #fff;
+      box-shadow: 0 0 20px #0ff;
+    }
+    #gameOver {
+      position: absolute;
+      color: red;
+      font-size: 50px;
+      display: none;
+      text-shadow: 0 0 10px red;
+    }
+    #score {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="400" height="600"></canvas>
+  <div id="score">Pontos: 0</div>
+  <div id="gameOver">GAME OVER<br><small>Pressione R para reiniciar</small></div>
 
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const scoreElement = document.getElementById("score");
+    const gameOverElement = document.getElementById("gameOver");
+
+    let score = 0;
+    let gameOver = false;
+    let speed = 5;
+
+    // Carro do jogador
+    let car = {
+      x: 180,
+      y: 450,
+      width: 50,
+      height: 80,
+      speed: 7
+    };
+
+    // Pistas
+    let roadY = 0;
+
+    // Obstáculos
+    let obstacles = [];
+    let lastObstacle = 0;
+
+    // Controles
+    let keys = {};
+
+    document.addEventListener("keydown", e => keys[e.key] = true);
+    document.addEventListener("keyup", e => keys[e.key] = false);
+
+    function drawRoad() {
+      ctx.fillStyle = "#222";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Faixas brancas
+      ctx.fillStyle = "white";
+      for (let i = -100; i < canvas.height; i += 80) {
+        ctx.fillRect(195, i + roadY, 10, 40);
+      }
+    }
+
+    function drawCar() {
+      ctx.fillStyle = "#00ff00";
+      ctx.fillRect(car.x, car.y, car.width, car.height);
+      
+      // Detalhes do carro
+      ctx.fillStyle = "#008800";
+      ctx.fillRect(car.x + 5, car.y + 10, car.width - 10, 25);
+      ctx.fillStyle = "white";
+      ctx.fillRect(car.x + 10, car.y + 15, 10, 10);
+      ctx.fillRect(car.x + 30, car.y + 15, 10, 10);
+    }
+
+    function createObstacle() {
+      if (Date.now() - lastObstacle > 800) {
+        obstacles.push({
+          x: Math.random() * (canvas.width - 60) + 30,
+          y: -80,
+          width: 50,
+          height: 80
+        });
+        lastObstacle = Date.now();
+      }
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = "#ff0000";
+      for (let obs of obstacles) {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+      }
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      // Movimento do carro
+      if (keys["ArrowLeft"] && car.x > 20) car.x -= car.speed;
+      if (keys["ArrowRight"] && car.x < canvas.width - car.width - 20) car.x += car.speed;
+
+      // Scroll da estrada
+      roadY += speed;
+      if (roadY > 80) roadY = 0;
+
+      // Criar e mover obstáculos
+      createObstacle();
+      for (let i = 0; i < obstacles.length; i++) {
+        obstacles[i].y += speed;
+
+        // Colisão
+        if (
+          car.x < obstacles[i].x + obstacles[i].width &&
+          car.x + car.width > obstacles[i].x &&
+          car.y < obstacles[i].y + obstacles[i].height &&
+          car.y + car.height > obstacles[i].y
+        ) {
+          gameOver = true;
+          gameOverElement.style.display = "block";
+        }
+
+        // Remover obstáculos fora da tela
+        if (obstacles[i].y > canvas.height) {
+          obstacles.splice(i, 1);
+          score += 10;
+          scoreElement.textContent = `Pontos: ${score}`;
+        }
+      }
+
+      // Aumentar dificuldade
+      if (score > 300 && speed < 12) speed = 8;
+    }
+
+    function gameLoop() {
+      update();
+      drawRoad();
+      drawObstacles();
+      drawCar();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Reiniciar com tecla R
+    document.addEventListener("keydown", e => {
+      if (gameOver && (e.key === "r" || e.key === "R")) {
+        location.reload();
+      }
+    });
+
+    gameLoop();
+  </script>
+</body>
+</html>
