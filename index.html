@@ -3,38 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Carro 3D - Simples</title>
+    <title>Jogo da Memória</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-        #info {
-            position: absolute; top: 10px; left: 10px; color: white; font-family: Arial;
-            background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #2c3e50;
+            color: white;
+            margin: 0;
+            padding: 20px;
         }
-    </style>
-</head>
-<body>
-    <div id="info">
-        <h2>🚗 Jogo de Carro 3D</h2>
-        <p>Use as setas ← ↑ ↓ → para dirigir</p>
-        <p>Velocidade atual: <span id="speed">0</span> km/h</p>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
-    <script>
-        // Configuração básica
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.Fog(0x87ceeb, 10, 100);
-
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // Luz
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(10, 20, 10);
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0x666666));
-
-        // Chão (p
+        h1 {
+            margin: 10px 0 20px;
+        }
+        .info {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 10px
