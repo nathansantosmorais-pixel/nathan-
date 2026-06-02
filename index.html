@@ -1,307 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-  <title>🏎️ Corrida 3D - Modo Relax</title>
-=======
-  <title>🏎️ Corrida 3D</title>
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-  <style>
-    body { margin: 0; overflow: hidden; background: #000; }
-    canvas { display: block; }
-    #score {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      font-size: 28px;
-      font-family: Arial, sans-serif;
-      z-index: 100;
-      text-shadow: 0 0 10px black;
-    }
-    #gameOver {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: red;
-      font-size: 60px;
-      display: none;
-      text-align: center;
-      text-shadow: 0 0 15px red;
-      z-index: 100;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Carro 3D - Simples</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #info {
+            position: absolute; top: 10px; left: 10px; color: white; font-family: Arial;
+            background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-  <div id="score">Pontos: 0</div>
-  <div id="gameOver">GAME OVER<br><small>Pressione R para jogar novamente</small></div>
+    <div id="info">
+        <h2>🚗 Jogo de Carro 3D</h2>
+        <p>Use as setas ← ↑ ↓ → para dirigir</p>
+        <p>Velocidade atual: <span id="speed">0</span> km/h</p>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script>
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
+    <script>
+        // Configuração básica
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.Fog(0x87ceeb, 10, 100);
 
-    // Luzes
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 20, 10);
-    scene.add(directionalLight);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-    let score = 0;
-    let gameOver = false;
-<<<<<<< HEAD
-    let speed = 0.35; // um pouco mais lento também
-=======
-    let speed = 0.4;
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
+        // Luz
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(10, 20, 10);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x666666));
 
-<<<<<<< HEAD
-    // Carro do jogador
-    const carGroup = new THREE.Group();
-    const carBody = new THREE.Mesh(
-      new THREE.BoxGeometry(2, 1, 4),
-      new THREE.MeshPhongMaterial({ color: 0x00ff00 })
-    );
-    carBody.position.y = 0.5;
-    
-    const carCabin = new THREE.Mesh(
-      new THREE.BoxGeometry(1.4, 0.8, 2),
-      new THREE.MeshPhongMaterial({ color: 0x008800 })
-    );
-    carCabin.position.set(0, 1.2, -0.5);
-    
-    carGroup.add(carBody);
-    carGroup.add(carCabin);
-    scene.add(carGroup);
-    carGroup.position.z = -8;
-=======
-    // Carro do jogador (3D)
-    const carGroup = new THREE.Group();
-    
-    const carBody = new THREE.Mesh(
-      new THREE.BoxGeometry(2, 1, 4),
-      new THREE.MeshPhongMaterial({ color: 0x00ff00 })
-    );
-    carBody.position.y = 0.5;
-    
-    const carCabin = new THREE.Mesh(
-      new THREE.BoxGeometry(1.4, 0.8, 2),
-      new THREE.MeshPhongMaterial({ color: 0x008800 })
-    );
-    carCabin.position.set(0, 1.2, -0.5);
-    
-    carGroup.add(carBody);
-    carGroup.add(carCabin);
-    scene.add(carGroup);
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-
-<<<<<<< HEAD
-    // Estrada
-    const road = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 1000),
-      new THREE.MeshPhongMaterial({ color: 0x333333 })
-    );
-    road.rotation.x = -Math.PI / 2;
-    road.position.y = -0.1;
-    scene.add(road);
-=======
-    carGroup.position.z = -8;
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-
-<<<<<<< HEAD
-    // Faixas da estrada
-    const laneLines = [];
-    for (let i = -5; i < 15; i++) {
-      const line = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.3, 8),
-        new THREE.MeshPhongMaterial({ color: 0xffffff })
-      );
-      line.rotation.x = -Math.PI / 2;
-      line.position.set(0, 0.01, i * 15 - 50);
-      scene.add(line);
-      laneLines.push(line);
-    }
-=======
-    // Estrada
-    const roadGeometry = new THREE.PlaneGeometry(10, 1000);
-    const roadMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
-    const road = new THREE.Mesh(roadGeometry, roadMaterial);
-    road.rotation.x = -Math.PI / 2;
-    road.position.y = -0.1;
-    scene.add(road);
-
-    // Faixas da estrada
-    const laneLines = [];
-    for (let i = -5; i < 15; i++) {
-      const line = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.3, 8),
-        new THREE.MeshPhongMaterial({ color: 0xffffff })
-      );
-      line.rotation.x = -Math.PI / 2;
-      line.position.set(0, 0.01, i * 15 - 50);
-      scene.add(line);
-      laneLines.push(line);
-    }
-
-    // Obstáculos
-    const obstacles = [];
-    function createObstacle() {
-      const obs = new THREE.Mesh(
-        new THREE.BoxGeometry(2, 1.5, 3),
-        new THREE.MeshPhongMaterial({ color: 0xff0000 })
-      );
-      obs.position.set(
-        (Math.random() - 0.5) * 7,
-        0.75,
-        -60 - Math.random() * 30
-      );
-      scene.add(obs);
-      obstacles.push(obs);
-    }
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-
-<<<<<<< HEAD
-    // Obstáculos (agora bem mais raros)
-    const obstacles = [];
-    
-    function createObstacle() {
-      const obs = new THREE.Mesh(
-        new THREE.BoxGeometry(2, 1.5, 3),
-        new THREE.MeshPhongMaterial({ color: 0xff0000 })
-      );
-      obs.position.set(
-        (Math.random() - 0.5) * 7,
-        0.75,
-        -70 - Math.random() * 40
-      );
-      scene.add(obs);
-      obstacles.push(obs);
-    }
-
-    // Controles
-    const keys = {};
-=======
-    // Controles
-    const keys = {};
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-    document.addEventListener("keydown", e => keys[e.key] = true);
-    document.addEventListener("keyup", e => keys[e.key] = false);
-
-    camera.position.set(0, 10, 10);
-    camera.lookAt(0, 0, -10);
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      if (gameOver) {
-        renderer.render(scene, camera);
-        return;
-      }
-
-      // Movimento do carro
-      if (keys["ArrowLeft"] && carGroup.position.x > -4) carGroup.position.x -= 0.3;
-      if (keys["ArrowRight"] && carGroup.position.x < 4) carGroup.position.x += 0.3;
-
-<<<<<<< HEAD
-      // Mover estrada
-      laneLines.forEach(line => {
-        line.position.z += speed;
-        if (line.position.z > 20) line.position.z = -80;
-      });
-=======
-      // Mover estrada e linhas
-      laneLines.forEach(line => {
-        line.position.z += speed;
-        if (line.position.z > 20) line.position.z = -80;
-      });
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-
-      // Obstáculos
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        obstacles[i].position.z += speed;
-
-        // Colisão
-        const dx = carGroup.position.x - obstacles[i].position.x;
-        const dz = carGroup.position.z - obstacles[i].position.z;
-        if (Math.abs(dx) < 2 && Math.abs(dz) < 3) {
-          gameOver = true;
-          document.getElementById("gameOver").style.display = "block";
-        }
-
-<<<<<<< HEAD
-        if (obstacles[i].position.z > 15) {
-          scene.remove(obstacles[i]);
-=======
-        // Remover quando passar
-        if (obstacles[i].position.z > 15) {
-          scene.remove(obstacles[i]);
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-          obstacles.splice(i, 1);
-<<<<<<< HEAD
-          score += 20; // mais pontos por obstáculo agora
-          document.getElementById("score").textContent = `Pontos: ${score}`;
-=======
-          score += 10;
-          document.getElementById("score").textContent = `Pontos: ${score}`;
-          
-          if (score % 200 === 0) speed += 0.08;
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-        }
-      }
-
-<<<<<<< HEAD
-      // ✅ Poucos obstáculos (bem mais tranquilo)
-      if (Math.random() < 0.008) createObstacle();
-=======
-      // Criar novos obstáculos
-      if (Math.random() < 0.03) createObstacle();
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-
-      renderer.render(scene, camera);
-    }
-
-<<<<<<< HEAD
-    // Reiniciar com R
-=======
-    // Reiniciar
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-    document.addEventListener("keydown", e => {
-      if (gameOver && (e.key === "r" || e.key === "R")) {
-        location.reload();
-      }
-    });
-
-<<<<<<< HEAD
-    // Obstáculos iniciais (poucos)
-    for (let i = 0; i < 3; i++) createObstacle();
-
-    animate();
-
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-=======
-    // Criar alguns obstáculos iniciais
-    for (let i = 0; i < 6; i++) createObstacle();
-
-    animate();
-
-    // Responsivo
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
->>>>>>> 671f42a9bbb59fa172771dea55aa5ef0f9cd98e6
-  </script>
-</body>
-</html>
+        // Chão (p
